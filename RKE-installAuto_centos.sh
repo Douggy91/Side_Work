@@ -49,8 +49,8 @@ for (( i=0; i<${#allArr[@]};i++)); do
         v=$i
         let "v+=1"
 	echo "
-expect <<EOF
 yum install expect -y
+expect <<EOF
 spawn ssh-keygen -t rsa
 set timeout 3
 expect \"save the key\"
@@ -81,8 +81,8 @@ EOF
 done
 
 echo " 
-expect <<EOF
 yum install -y expect
+expect <<EOF
 spawn ssh-keygen -t rsa
 set timeout 3
 expect \"save the key\"

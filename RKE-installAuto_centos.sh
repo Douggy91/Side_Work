@@ -45,41 +45,6 @@ allArr=(${controlArr[@]} ${workerArr[@]})
 #ssh certification
 echo -e "press password\nplease before starting this script,set all node password same password"
 read password
-for (( i=0; i<${#allArr[@]};i++)); do
-        v=$i
-        let "v+=1"
-	echo "
-yum install expect -y
-expect <<EOF
-spawn ssh-keygen -t rsa
-set timeout 3
-expect \"save the key\"
-send \"\\r\"
-expect \"passphrase\"
-send \"\\r\"
-expect \"same passphrase\"
-send \"\\r\"
-spawn ssh-keygen -t dsa
-expect \"save the key\"
-send \"\\r\"
-expect \"passphrase\"
-send \"\\r\"
-expect \"same passphrase\"
-send \"\\r\"
-expect eof
-EOF
-cat /root/.ssh/*.pub > /root/.ssh/authorized_pub
-expect <<EOF
-spawn scp /root/.ssh/authorized_pub ${my_ip}:/root/.ssh/${allArr[$i]}_pub
-expect \"connecting\"
-send \"yes\\r\"
-expect \"password\"
-send \"${password}\\r\"
-expect eof
-EOF
-" > ssh_generate.sh
-done
-
 echo " 
 yum install -y expect
 expect <<EOF
@@ -109,22 +74,49 @@ if [ "$addmore" == "y" ]; then
 	for (( i=0; i<${#controlArr[@]};i++)); do
 		v=$i
 		let "v+=1"
+		echo "
+		yum install expect -y
+		expect <<EOF
+		spawn ssh-keygen -t rsa
+		set timeout 3
+		expect \"save the key\"
+		send \"\\r\"
+		expect \"passphrase\"
+		send \"\\r\"
+		expect \"same passphrase\"
+		send \"\\r\"
+		spawn ssh-keygen -t dsa
+		expect \"save the key\"
+		send \"\\r\"
+		expect \"passphrase\"
+		send \"\\r\"
+		expect \"same passphrase\"
+		send \"\\r\"
+		expect eof
+		EOF
+		cat /root/.ssh/*.pub > /root/.ssh/authorized_pub
+		expect <<EOF
+		spawn scp /root/.ssh/authorized_pub ${my_ip}:/root/.ssh/${controlArr[$i]}_pub
+		expect \"connecting\"
+		send \"yes\\r\"
+		expect \"password\"
+		send \"${password}\\r\"
+		expect eof
+EOF
+		" > ssh_generate_s$v.sh
+
 		expect <<EOF 
-		spawn ssh ${controlArr[$i]} yum install -y expect
+		spawn ssh ${controlArr[$i]} hostnamectl set-hostname RKE-CONS$v
 		expect "connecting"
 		send "yes\r"
 		expect "password"
 		send "${password}\r"
 
-		spawn ssh ${controlArr[$i]} hostnamectl set-hostname RKE-CONS$v
+		spawn scp /root/ssh_generate_s$v.sh ${controlArr[$i]}:/root/ssh_generate_s$v.sh
 		expect "password"
 		send "${password}\r"
 
-		spawn scp /root/ssh_generate.sh ${controlArr[$i]}:/root/ssh_generate.sh
-		expect "password"
-		send "${password}\r"
-
-		spawn ssh ${controlArr[$i]} source /root/ssh_generate.sh
+		spawn ssh ${controlArr[$i]} source /root/ssh_generate_s$v.sh
 		expect "password"
 		send "${password}\r"
 		expect eof
@@ -135,22 +127,48 @@ fi
 for (( i=0; i<${#workerArr[@]};i++)); do
 	v=$i
 	let "v+=1"
+			echo "
+		yum install expect -y
+		expect <<EOF
+		spawn ssh-keygen -t rsa
+		set timeout 3
+		expect \"save the key\"
+		send \"\\r\"
+		expect \"passphrase\"
+		send \"\\r\"
+		expect \"same passphrase\"
+		send \"\\r\"
+		spawn ssh-keygen -t dsa
+		expect \"save the key\"
+		send \"\\r\"
+		expect \"passphrase\"
+		send \"\\r\"
+		expect \"same passphrase\"
+		send \"\\r\"
+		expect eof
+		EOF
+		cat /root/.ssh/*.pub > /root/.ssh/authorized_pub
+		expect <<EOF
+		spawn scp /root/.ssh/authorized_pub ${my_ip}:/root/.ssh/${workerArr[$i]}_pub
+		expect \"connecting\"
+		send \"yes\\r\"
+		expect \"password\"
+		send \"${password}\\r\"
+		expect eof
+EOF
+		" > ssh_generate_a$v.sh
 	expect <<EOF 
-	spawn ssh ${workerArr[$i]} yum install -y expect
+	spawn ssh ${workerArr[$i]} hostnamectl set-hostname RKE-WORKER$v
 	expect "connecting"
 	send "yes\r"
 	expect "password"
 	send "${password}\r"
 
-	spawn ssh ${workerArr[$i]} hostnamectl set-hostname RKE-WORKER$v
+	spawn scp /root/ssh_generate_a$v.sh ${workerArr[$i]}:/root/ssh_generate_a$v.sh
 	expect "password"
 	send "${password}\r"
 
-	spawn scp /root/ssh_generate.sh ${workerArr[$i]}:/root/ssh_generate.sh
-	expect "password"
-	send "${password}\r"
-
-	spawn ssh ${workerArr[$i]} source /root/ssh_generate.sh
+	spawn ssh ${workerArr[$i]} source /root/ssh_generate_a$v.sh
 	expect "password"
 	send "${password}\r"
 	expect eof

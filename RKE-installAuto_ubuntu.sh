@@ -46,6 +46,16 @@ allArr=(${controlArr[@]} ${workerArr[@]})
 echo -e "press password\nplease before starting this script,set all node password same password"
 read password
 
+echo "use LB?"
+read use_LB
+
+if [ "$use_LB" == "y" ]; then
+  echo "press LB_ip"
+	read LB_ip
+else
+  $LB_ip=$my_ip
+fi
+
 echo " 
 apt-get install -y expect
 expect <<EOF
@@ -225,7 +235,7 @@ export CRI_CONFIG_FILE=/var/lib/rancher/rke2/agent/etc/crictl.yaml
 
 #token exchange & worker setting
 export token=`cat /var/lib/rancher/rke2/server/node-token`
-echo -e "server: https://${my_ip}:9345 \ntoken: ${token} \ncni: \"calico\" \ntls-san:\n  - my-kubernetes-domain.com \n  - another-kubernetes-domain.com" > config.yaml
+echo -e "server: https://${LB_ip}:9345 \ntoken: ${token} \ncni: \"calico\" \ntls-san:\n  - my-kubernetes-domain.com \n  - another-kubernetes-domain.com" > config.yaml
 
 if [ "$addmore" == "y" ]; then
 	for ((i=0; i<${#controlArr[@]};i++)); do

@@ -6,7 +6,7 @@ apt-get install -y net-tools expect
 hostnamectl set-hostname RKE-CONS0
 
 my_ip=`ifconfig | grep inet | grep -Ev inet6 | awk 'NR==1{print $2}'`
-#my_ip_in=`ifconfig | grep inet | grep -Ev inet6 | awk 'NR==2{print $2}'`
+my_ip_in=`ifconfig | grep inet | grep -Ev inet6 | awk 'NR==2{print $2}'`
 
 controlArr=()
 i=0
@@ -52,6 +52,21 @@ read use_LB
 if [ "$use_LB" == "y" ]; then
   echo "press LB_ip"
 	read LB_ip
+	cp /etc/hosts hosts
+	echo "$my_ip_in   RKE-CONS0" >> hosts
+	for (( i=0; i<${#controlArr[@]};i++)); do
+		v=$i
+		let "v+=1"
+		echo "${controlArr[$i]}  RKE-CONS$v" >> hosts
+	done
+	expect <<EOF
+	spawn scp hosts $LB_ip:/etc/hosts
+	expect "connecting"
+	send "yes\r"
+	expect "password"
+	send "${password}\r"
+	expect eof
+EOF
 else
   $LB_ip=$my_ip
 fi

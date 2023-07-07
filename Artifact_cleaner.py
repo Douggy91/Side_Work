@@ -1,11 +1,11 @@
 import requests, json
 
-target_url = 'https://gitlab.nip.io/api/v4/projects'
-gg_token = 'glpat-wu2GGuwxnBR4HfT7TxyY'
+target_url = 'https://<your_gitlab_ur>/api/v4/projects'
+gg_token = '<your_gitlab_token>'
 gg = requests.get(url=target_url, headers={'PRIVATE-TOKEN': gg_token} , verify=False)
 pj = gg.json()
 pj_list = []
-target_date="2023-07-07"
+target_date="<date>"
 
 # 프로젝트의 id_list 추출
 for i in pj:

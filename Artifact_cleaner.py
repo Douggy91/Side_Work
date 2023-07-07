@@ -17,8 +17,6 @@ def get_content(project_id, method):
 
 statics = {}
 
-# print(get_content(2,'statistics').json())
-
 for id in pj_list:    
     # 프로젝트 별 statistics 추출
     statistics_content = get_content(id,'statistics').json()

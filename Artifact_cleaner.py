@@ -1,9 +1,7 @@
 import requests, json
 
-# target_url = 'https://<your_gitlab_ur>/api/v4/projects'
-target_url = 'https://192.168.31.160:30441/api/v4/projects'
-# gg_token = '<your_gitlab_token>'
-gg_token = 'glpat-wu2GGuwxnBR4HfT7TxyY'
+target_url = 'https://<your_gitlab_ur>/api/v4/projects'
+gg_token = '<your_gitlab_token>'
 gg = requests.get(url=target_url, headers={'PRIVATE-TOKEN': gg_token} , verify=False)
 pj = gg.json()
 pj_list = []

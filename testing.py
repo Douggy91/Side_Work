@@ -29,14 +29,10 @@ for each_line in input_lines:
                 idx = item.index(' ')                                                                                    
                 rev = item.split()[0]                                                                                    
                 rest = item.split()[1:]                                                                                  
-                print("Debug in pre-receive ... Item: %s, Check these messages: %s" % (rev, rest))
-                                                                            
-                merged = ""                                                                                              
-                for word in rest:                                                                 
-                    merged += word                                                                                       
-                match_any = re.search(r'(add|modify|remove|update|repair|refactor|test)+\n.*', merged, re.I|re.MULTILINE)
-                if match_any is not None:                                   
-                    valid_commit_msg = True      
+                print("Debug in pre-receive ... Item: %s, Check these messages: %s" % (rev, rest))                                                                                   
+                match_any = re.search(r'(add|modify|remove|update|repair|refactor|test)+', rest[0], re.I|re.MULTILINE)   
+                if match_any is not None:                                                                                
+                    valid_commit_msg = True     
                                                                                                                          
         #print "\n", valid_commit_msg, new_branch_push, branch_deleted, "\n"                                             
                                                  

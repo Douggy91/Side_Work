@@ -1,7 +1,7 @@
 import requests, json
 
 target_url = 'https://gitlab.nip.io/api/v4/projects'
-gg_token = 'glpat-wu2GGuwxnBR4HfT7TxyY'
+gg_token = 'glpat-Bu3HhpJZQsmUsKxpnzsh'
 gg = requests.get(url=target_url, headers={'PRIVATE-TOKEN': gg_token} , verify=False)
 pj = gg.json()
 pj_list = []
@@ -40,11 +40,15 @@ def remove_artifact(project_list):
     statistics_content = get_content(project_id,'statistics').json()
     fetch_list = statistics_content['fetches']
     # statics dict에 proj_id : value로 정리
-    statics[project_id] = fetch_list['total']/len(fetch_list['days'])
     # 전체 평균
-    statics_avg = sum(statics.values())/len(statics)
-    get_job_list(list(statics.keys()), statics, statics_avg)   
-    remove_artifact(project_list[1:])
+    try:
+        statics[project_id] = fetch_list['total']/len(fetch_list['days'])
+        statics_avg = sum(statics.values())/len(statics)
+        get_job_list(list(statics.keys()), statics, statics_avg)   
+        remove_artifact(project_list[1:])
+    except ZeroDivisionError:
+        print("평균 fetch 횟수가 0에 수렴합니다.")
+
 
 
 # for id in pj_list:    

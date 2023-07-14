@@ -15,7 +15,7 @@ for each_line in input_lines:
             all_ok = True                                                                                      
             continue                                                                                           
                                                                                                                
-        new_br_push = re.match(r'[^1-9]+', base) #handles new branches being pushed                            
+        new_br_push = re.match(r'[^1-9]'+, base) #handles new branches being pushed                            
         if new_br_push:                
             all_ok = True              
             continue                                                                                           
@@ -39,7 +39,7 @@ for each_line in input_lines:
                     head = content.split("\)")[0]
                     body = content.split("\)")[1]
                     match_head = re.search(r'(add|modify|remove|update|repair|refactor|test)\(.{3,}', head, re.I)
-                    match_body = re.search(r'(.{3,}), body, re.I)
+                    match_body = re.search(r'(.{3,})', body, re.I)
                     if match_head is not None and match_body:                                                                                
                         valid_commit_msg = True     
                                                                                                                          
